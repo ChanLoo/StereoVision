@@ -24,25 +24,25 @@ while(videoCapture.isOpened()):
     cv2.imshow('imgR', frameR)
 
     # Find the chess board corners
-    retR, cornersR = cv2.findChessboardCorners(grayR,(9,7),None)  # Define the number of chess corners (here 9 by 6) we are looking for with the right Camera
-    retL, cornersL = cv2.findChessboardCorners(grayL,(9,7),None)
+    retR, cornersR = cv2.findChessboardCorners(grayR, (9,7), None)  # Define the number of chess corners (here 9 by 6) we are looking for with the right Camera
+    retL, cornersL = cv2.findChessboardCorners(grayL, (9,7), None)
 
     # If found, add object points, image points (after refining them)
     if (retR == True) & (retL == True):
-        corners2R= cv2.cornerSubPix(grayR,cornersR,(11,11),(-1,-1),criteria)    # Refining the Position
-        corners2L= cv2.cornerSubPix(grayL,cornersL,(11,11),(-1,-1),criteria)
+        corners2R = cv2.cornerSubPix(grayR, cornersR, (11, 11), (-1, -1), criteria)    # Refining the Position
+        corners2L = cv2.cornerSubPix(grayL, cornersL, (11, 11), (-1, -1), criteria)
 
         # Draw and display the corners
-        cv2.drawChessboardCorners(grayR,(9,7),corners2R,retR)
-        cv2.drawChessboardCorners(grayL,(9,7),corners2L,retL)
-        cv2.imshow('VideoR',grayR)
-        cv2.imshow('VideoL',grayL)
+        cv2.drawChessboardCorners(grayR, (9,7), corners2R, retR)
+        cv2.drawChessboardCorners(grayL, (9,7), corners2L, retL)
+        cv2.imshow('VideoR', grayR)
+        cv2.imshow('VideoL', grayL)
         if cv2.waitKey(0) & 0xFF == ord('s'):   # Push "s" to save the images and "c" if you don't want to
-            str_id_image= str(id_image)
+            str_id_image = str(id_image)
             print('Images ' + str_id_image + ' saved for right and left cameras')
-            cv2.imwrite('./image/chessboard-R'+str_id_image+'.png',frameR) # Save the image in the file where this Programm is located
-            cv2.imwrite('./image/chessboard-L'+str_id_image+'.png',frameL)
-            id_image=id_image+1
+            cv2.imwrite('./image/chessboard-L' + str_id_image+'.png', frameL) # Save the image in the file where this Programm is located
+            cv2.imwrite('./image/chessboard-R' + str_id_image+'.png', frameR)
+            id_image = id_image+1
         else:
             print('Images not saved')
         
