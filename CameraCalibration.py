@@ -36,7 +36,7 @@ imagePointsL = []
 imagePointsR = []
 
 # Camera Calibration
-print("Starting calibration for the cameras...")
+print("Starting calibration for the camera...")
 # call all saved images
 for i in range(0, 50):
     t = str(i)
