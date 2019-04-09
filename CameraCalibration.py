@@ -95,6 +95,26 @@ wlsFilter = cv2.ximgproc.createDisparityWLSFilter(matcher_left=strereo)
 wlsFilter.setLambda(lmbda)
 wlsFilter.setSigmaColor(sigma)
 
+# Starting the StereoVision
+
+# Call the camera
+videoCapture = cv2.VideoCapture(cv2.CAP_DSHOW + 1)
 
 
+while(videoCapture.isOpened()):
+    fps = 30 # an assumption
+    # size = (1280, 480)
+    size = (int(videoCapture.get(cv2.CAP_PROP_FRAME_WIDTH)), \
+        int(videoCapture.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    ret, frame = videoCapture.read()
+    if ret == True:
+        frameL = frame[:, 640:, :]
+        frameR = frame[:, :640, :]
+        cv2.imshow('frame',frameL)
+        if cv2.waitKey(1)&0xFF == ord('q'):
+            break
+    else:
+        break
 
+videoCapture.release()
+cv2.destroyAllWindows()  
