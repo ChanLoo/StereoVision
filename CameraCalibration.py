@@ -42,12 +42,8 @@ for i in range(0, 50):
     t = str(i)
     ChessImageL = cv2.imread('./image/chessboard-L' + t + '.png', 0)
     ChessImageR = cv2.imread('./image/chessboard-R' + t + '.png', 0)
-    #retL, cornersL = cv2.findChessboardCorners(ChessImageL, (9, 7), None)
-    #retR, cornersR = cv2.findChessboardCorners(ChessImageR, (9, 7), None)
-    grayChessImageL = cv2.cvtColor(ChessImageL, cv2.COLOR_BGR2GRAY)
-    grayChessImageR = cv2.cvtColor(ChessImageR, cv2.COLOR_BGR2GRAY)
-    retL, cornersL = cv2.findChessboardCorners(grayChessImageL, (9, 7), None)
-    retR, cornersR = cv2.findChessboardCorners(grayChessImageR, (9, 7), None)
+    retL, cornersL = cv2.findChessboardCorners(ChessImageL, (9, 7), None)
+    retR, cornersR = cv2.findChessboardCorners(ChessImageR, (9, 7), None)
     if retL == True & retR == True:
         objPoints.append(preObjPoints)
         cv2.cornerSubPix(ChessImageL, cornersL, (11, 11), (-1, -1), criteria)
@@ -58,6 +54,13 @@ for i in range(0, 50):
 # Determine the new values for different patameters
 # Left Side
 retL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(objPoints, imagePointsL, ChessImageL.shape[::-1], None, None)
+'''
+print("retL: ", retL)
+print("mtxL: ", mtxL) # 内参数矩阵
+print("distL: ", distL) # 畸变系数
+print("rvecsL: ", rvecsL) # 旋转向量
+print("tvecsL: ", tvecsL) # 平移向量
+'''
 hL, wL = ChessImageL.shape[:2]
 OmtxL, roiL = cv2.getOptimalNewCameraMatrix(mtxL, distL, (wL, hL), 1, (wL, hL))
 
