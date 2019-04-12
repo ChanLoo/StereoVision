@@ -6,6 +6,7 @@
 
 import cv2
 import numpy as np
+import sys
 
 # Filtering
 kernel= np.ones((3,3),np.uint8)
@@ -21,7 +22,6 @@ def coordsMouseDisp(event, x, y, flags, param):
         distance = -593.97 * average**(3) + 1506.8 * average**(2) - 1373.1 * average + 522.06
         distance = np.around(distance * 0.01, decimals=2)
         print('Distance: ' + str(distance) + ' m')
-
 
 # Termination criteria
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -63,6 +63,9 @@ print("tvecsL: ", tvecsL) # 平移向量
 '''
 hL, wL = ChessImageL.shape[:2]
 OmtxL, roiL = cv2.getOptimalNewCameraMatrix(mtxL, distL, (wL, hL), 1, (wL, hL))
+print(OmtxL)
+
+#sys.exit()
 
 # Right Side
 retR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(objPoints, imagePointsR, ChessImageR.shape[::-1], None, None)
