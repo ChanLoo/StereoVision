@@ -61,6 +61,7 @@ print("distL: ", distL) # 畸变系数
 print("rvecsL: ", rvecsL) # 旋转向量
 print("tvecsL: ", tvecsL) # 平移向量
 '''
+
 hL, wL = ChessImageL.shape[:2]
 OmtxL, roiL = cv2.getOptimalNewCameraMatrix(mtxL, distL, (wL, hL), 1, (wL, hL))
 print(OmtxL)
