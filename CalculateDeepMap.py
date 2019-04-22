@@ -1,9 +1,10 @@
 import cv2
+
 import numpy as np
 from matplotlib import pyplot as plt
 
-imgL = cv2.imread('./image/chessboard-L1.png',0)
-imgR = cv2.imread('./image/chessboard-R1.png',0)
+imgL = cv2.imread('./image/L4.png',0)
+imgR = cv2.imread('./image/R4.png',0)
 
 stereo = cv2.StereoBM_create(numDisparities=16, blockSize=15)
 disparity = stereo.compute(imgL,imgR)
