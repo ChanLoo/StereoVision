@@ -14,12 +14,54 @@ deep_visualization_scale = 2048
 calibration = np.load('./calibration.npz', allow_pickle=False)
 imageSize = tuple(calibration['imageSize'])
 mapXL = calibration['mapXL']
+print(mapXL)
 mapYL = calibration['mapYL']
 roiL = tuple(calibration['roiL'])
 mapXR = calibration['mapXR']
 mapYR = calibration['mapYR']
 roiR = tuple(calibration['roiR'])
+'''
+videoCapture = cv2.VideoCapture(cv2.CAP_DSHOW + 1)
+camera_width = 1280
+camera_height = 720
+videoCapture.set(cv2.CAP_PROP_FRAME_WIDTH, camera_width*2)
+videoCapture.set(cv2.CAP_PROP_FRAME_HEIGHT, camera_height)
 
+stereoMatcher = cv2.StereoBM_create()
+stereoMatcher.setMinDisparity(4)
+stereoMatcher.setNumDisparities(128)
+stereoMatcher.setBlockSize(21)
+stereoMatcher.setROI1(roiL)
+stereoMatcher.setROI2(roiR)
+stereoMatcher.setSpeckleRange(16)
+stereoMatcher.setSpeckleWindowSize(45)
+
+while(True):
+    if not videoCapture.grab():
+        print("No more frames")
+        break
+    ret, frame = videoCapture.read()
+    frameL = frame[:, camera_width:, :]
+    frameR = frame[:, :camera_width, :]
+    cv2.imshow('Normal', np.hstack([frameL, frameR]))
+
+    fixedL = cv2.remap(frameL, mapXL, mapYL, remap_interpolation)
+    fixedR = cv2.remap(frameR, mapXR, mapYR, remap_interpolation)
+    grayFixedL = cv2.cvtColor(fixedL, cv2.COLOR_BGR2GRAY)
+    grayFixedR = cv2.cvtColor(fixedR, cv2.COLOR_BGR2GRAY)
+    depth = stereoMatcher.compute(grayFixedL, grayFixedR)
+    cv2.imshow('fixedLeft', fixedL)
+    cv2.imshow('fixedRight', fixedR)
+    cv2.imshow('depth', depth / deep_visualization_scale)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+videoCapture.release()
+cv2.destroyAllWindows()
+'''
+
+'''
 def coordsMouseDisp(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDBLCLK:
         # print(x, y, disp[y, x], filteredImg[y, x])
@@ -47,32 +89,8 @@ stereo = cv2.StereoSGBM_create(minDisparity=minDisp,
                                 speckleWindowSize=100,
                                 speckleRange=32)
 
-videoCapture = cv2.VideoCapture(cv2.CAP_DSHOW + 1)
-camera_width = 640
-camera_height = 480
-videoCapture.set(cv2.CAP_PROP_FRAME_WIDTH, camera_width*2)
-videoCapture.set(cv2.CAP_PROP_FRAME_HEIGHT, camera_height)
-
-while(True):
-    if not videoCapture.grab():
-        print("No more frames")
-        break
-    ret, frame = videoCapture.read()
-    frameL = frame[:, camera_width:, :]
-    frameR = frame[:, :camera_width, :]
-    cv2.imshow('Normal', np.hstack([frameL, frameR]))
-    disparity = stereo.compute(frameL, frameR)
-    cv2.imshow('deepMap', disparity)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-videoCapture.release()
-cv2.destroyAllWindows()
-
-
-sys.exit()
-
+'''
+'''
 # Filtering
 kernel= np.ones((3,3),np.uint8)
 
@@ -92,12 +110,16 @@ wlsFilter.setSigmaColor(sigma)
 
 # Call the camera
 videoCapture = cv2.VideoCapture(cv2.CAP_DSHOW + 1)
+camera_width = 1280
+camera_height = 720
+videoCapture.set(cv2.CAP_PROP_FRAME_WIDTH, camera_width*2)
+videoCapture.set(cv2.CAP_PROP_FRAME_HEIGHT, camera_height)
 
 while(videoCapture.isOpened()):
     ret, frame = videoCapture.read()
     if ret == True:
-        frameL = frame[:, 640:, :]
-        frameR = frame[:, :640, :]
+        frameL = frame[:, camera_width:, :]
+        frameR = frame[:, :camera_width, :]
         # Rectify the images on rotation and alignement
         leftNice= cv2.remap(frameL, mapXL, mapYL, cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)  # Rectify the image using the kalibration parameters founds during the initialisation
         rightNice= cv2.remap(frameR, mapXR, mapYR, cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)
@@ -149,23 +171,24 @@ while(videoCapture.isOpened()):
 
 videoCapture.release()
 cv2.destroyAllWindows() 
-
 '''
+
 from matplotlib import pyplot as plt
 
-imgL = cv2.imread('./image/L4.png',0)
-imgR = cv2.imread('./image/R4.png',0)
+imgL = cv2.imread('./image/L0.png',0)
+imgR = cv2.imread('./image/R0.png',0)
 
 stereo = cv2.StereoBM_create(numDisparities=16, blockSize=15)
 disparity = stereo.compute(imgL,imgR)
 plt.imshow(disparity,'gray')
 plt.show()
-'''
+
+
 
 '''
 videoCapture = cv2.VideoCapture(cv2.CAP_DSHOW + 1)
-camera_width = 1280
-camera_height = 720
+camera_width = 640
+camera_height = 480
 videoCapture.set(cv2.CAP_PROP_FRAME_WIDTH, camera_width*2)
 videoCapture.set(cv2.CAP_PROP_FRAME_HEIGHT, camera_height)
 
@@ -176,16 +199,10 @@ while(True):
     ret, frame = videoCapture.read()
     frameL = frame[:, camera_width:, :]
     frameR = frame[:, :camera_width, :]
-    grayL = cv2.cvtColor(frameL, cv2.COLOR_BGR2GRAY)
-    grayR = cv2.cvtColor(frameR, cv2.COLOR_BGR2GRAY)
-    cv2.imshow('imgL', frameL)
-    cv2.imshow('imgR', frameR)
-    
-    #_, leftFrame = left.retrieve()
-    #_, rightFrame = right.retrieve()
+    cv2.imshow('Normal', np.hstack([frameL, frameR]))
+    disparity = stereo.compute(frameL, frameR)
+    cv2.imshow('deepMap', disparity)
 
-    #cv2.imshow('left', leftFrame)
-    #cv2.imshow('right', rightFrame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 

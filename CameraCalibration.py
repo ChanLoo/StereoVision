@@ -40,14 +40,16 @@ print("Starting calibration for the camera...")
 # call all saved images
 for i in range(0, 50):
     t = str(i)
-    ChessImageL = cv2.imread('./image/chessboard-L' + t + '.png', 0)
-    ChessImageR = cv2.imread('./image/chessboard-R' + t + '.png', 0)
-    retL, cornersL = cv2.findChessboardCorners(ChessImageL, (9, 7), None)
-    retR, cornersR = cv2.findChessboardCorners(ChessImageR, (9, 7), None)
+    ChessImageL = cv2.imread('./image/chessboard-L/chessboard-L' + t + '.png',)
+    ChessImageR = cv2.imread('./image/chessboard-R/chessboard-R' + t + '.png',)
+    grayChessImageL = cv2.cvtColor(ChessImageL, cv2.COLOR_BGR2GRAY)
+    grayChessImageR = cv2.cvtColor(ChessImageR, cv2.COLOR_BGR2GRAY)
+    retL, cornersL = cv2.findChessboardCorners(grayChessImageL, (9, 7), None)
+    retR, cornersR = cv2.findChessboardCorners(grayChessImageR, (9, 7), None)
     if retL == True & retR == True:
         objPoints.append(preObjPoints)
-        cv2.cornerSubPix(ChessImageL, cornersL, (11, 11), (-1, -1), criteria)
-        cv2.cornerSubPix(ChessImageR, cornersR, (11, 11), (-1, -1), criteria)
+        cv2.cornerSubPix(grayChessImageL, cornersL, (11, 11), (-1, -1), criteria)
+        cv2.cornerSubPix(grayChessImageR, cornersR, (11, 11), (-1, -1), criteria)
         imagePointsL.append(cornersL)
         imagePointsR.append(cornersR)
 
@@ -134,12 +136,16 @@ wlsFilter.setSigmaColor(sigma)
 
 # Call the camera
 videoCapture = cv2.VideoCapture(cv2.CAP_DSHOW + 1)
+camera_width = 1280
+camera_height = 720
+videoCapture.set(cv2.CAP_PROP_FRAME_WIDTH, camera_width*2)
+videoCapture.set(cv2.CAP_PROP_FRAME_HEIGHT, camera_height)
 
 while(videoCapture.isOpened()):
     ret, frame = videoCapture.read()
     if ret == True:
-        frameL = frame[:, 640:, :]
-        frameR = frame[:, :640, :]
+        frameL = frame[:, camera_width:, :]
+        frameR = frame[:, :camera_width, :]
         # Rectify the images on rotation and alignement
         leftNice= cv2.remap(frameL, leftStereoMap[0], leftStereoMap[1], cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)  # Rectify the image using the kalibration parameters founds during the initialisation
         rightNice= cv2.remap(frameR, rightStereoMap[0], rightStereoMap[1], cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)

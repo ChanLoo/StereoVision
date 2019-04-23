@@ -13,11 +13,15 @@ id_image=0
 criteria =(cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
 videoCapture = cv2.VideoCapture(cv2.CAP_DSHOW + 1)
+camera_width = 1280
+camera_height = 720
+videoCapture.set(cv2.CAP_PROP_FRAME_WIDTH, camera_width*2)
+videoCapture.set(cv2.CAP_PROP_FRAME_HEIGHT, camera_height)
 
 while(videoCapture.isOpened()):
     ret, frame = videoCapture.read()
-    frameL = frame[:, 640:, :]
-    frameR = frame[:, :640, :]
+    frameL = frame[:, camera_width:, :]
+    frameR = frame[:, :camera_width, :]
     grayL = cv2.cvtColor(frameL, cv2.COLOR_BGR2GRAY)
     grayR = cv2.cvtColor(frameR, cv2.COLOR_BGR2GRAY)
     cv2.imshow('imgL', frameL)
@@ -40,13 +44,11 @@ while(videoCapture.isOpened()):
         if cv2.waitKey(0) & 0xFF == ord('s'):   # Push "s" to save the images and "c" if you don't want to
             str_id_image = str(id_image)
             print('Images ' + str_id_image + ' saved for right and left cameras')
-            cv2.imwrite('./image/chessboard-L' + str_id_image + '.png', frameL) # Save the image in the file where this Programm is located
-            cv2.imwrite('./image/chessboard-R' + str_id_image + '.png', frameR)
+            cv2.imwrite('./image/chessboard-L/chessboard-L' + str_id_image + '.png', frameL) # Save the image in the file where this Programm is located
+            cv2.imwrite('./image/chessboard-R/chessboard-R' + str_id_image + '.png', frameR)
             id_image = id_image + 1
         else:
             print('Images not saved')
-        
-        
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         print('Quit.')

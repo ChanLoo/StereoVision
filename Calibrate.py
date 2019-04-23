@@ -139,12 +139,14 @@ retS, MLS, dLS, MRS, dRS, R, T, E, F = cv2.stereoCalibrate(objPoints,
                                                         criteriaStereo)
 
 print("Rectifying cameras...")
-rectifyScale = 0.25
+rectifyScale = 0
 RL, RR, PL, PR, Q, roiL, roiR = cv2.stereoRectify(MLS, dLS, MRS, dRS, imageSize, R, T, None, None, None, None, None, cv2.CALIB_ZERO_DISPARITY, rectifyScale)
 
 print("Saving calibration...")
-mapXL, mapYL = cv2.initUndistortRectifyMap(MLS, dLS, RL, PL, imageSize, cv2.CV_16SC2)
-mapXR, mapYR = cv2.initUndistortRectifyMap(MRS, dRS, RR, PR, imageSize, cv2.CV_16SC2)
+mapXL, mapYL = cv2.initUndistortRectifyMap(MLS, dLS, RL, PL, imageSize, cv2.CV_32FC1)
+mapXR, mapYR = cv2.initUndistortRectifyMap(MRS, dRS, RR, PR, imageSize, cv2.CV_32FC1)
+print(mapXL)
+#print(mapXR)
 np.savez_compressed('./calibration.npz',
                     imageSize=imageSize,
                     mapXL=mapXL,
