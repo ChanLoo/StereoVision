@@ -53,6 +53,7 @@ for i in range(0, 50):
 
 # Determine the new values for different patameters
 # Left Side
+print("Calibrating left camera...")
 retL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(objPoints, imagePointsL, ChessImageL.shape[::-1], None, None)
 '''
 print("retL: ", retL)
@@ -69,6 +70,7 @@ print(OmtxL)
 #sys.exit()
 
 # Right Side
+print("Calibrating right camera...")
 retR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(objPoints, imagePointsR, ChessImageR.shape[::-1], None, None)
 hR, wR = ChessImageR.shape[:2]
 OmtxR, roiR = cv2.getOptimalNewCameraMatrix(mtxR, distR, (wR, hR), 1, (wR, hR))
@@ -79,6 +81,7 @@ print("Camera is ready to use.")
 flags = 0
 flags |= cv2.CALIB_FIX_INTRINSIC
 
+print("Calibrating cameras together...")
 retS, MLS, dLS, MRS, dRS, R, T, E, F = cv2.stereoCalibrate(objPoints,
                                                         imagePointsL,
                                                         imagePointsR,
@@ -87,11 +90,16 @@ retS, MLS, dLS, MRS, dRS, R, T, E, F = cv2.stereoCalibrate(objPoints,
                                                         mtxR,
                                                         distR,
                                                         ChessImageL.shape[::-1],
-                                                        criteriaStereo,
-                                                        flags)
+                                                        None,
+                                                        None,
+                                                        None,
+                                                        None,
+                                                        flags,
+                                                        criteriaStereo)
 
-rectifyScale = 0
-RL, RR, PL, PR, Q, roiL, roiR = cv2.stereoRectify(MLS, dLS, MRS, dRS, ChessImageL.shape[::-1], R, T, rectifyScale, (0, 0))
+print("Rectifying cameras...")
+rectifyScale = 0.25
+RL, RR, PL, PR, Q, roiL, roiR = cv2.stereoRectify(MLS, dLS, MRS, dRS, ChessImageL.shape[::-1], R, T, None, None, None, None, None, cv2.CALIB_ZERO_DISPARITY, rectifyScale)
 leftStereoMap = cv2.initUndistortRectifyMap(MLS, dLS, RL, PL, ChessImageL.shape[::-1], cv2.CV_16SC2)
 rightStereoMap = cv2.initUndistortRectifyMap(MRS, dRS, RR, PR, ChessImageR.shape[::-1], cv2.CV_16SC2)
 
