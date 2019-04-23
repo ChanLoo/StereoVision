@@ -68,7 +68,7 @@ def FindChessboards(imagesDir):
                         objectPoints=objPoints,
                         imagePoints=imagePoints,
                         imageSize=imageSize)
-    return filenames, objPoints, imagePoints, imageSize
+    return (filenames, objPoints, imagePoints, imageSize)
 
 # Camera Calibration
 print("Starting calibration for the camera...")
@@ -76,12 +76,37 @@ print("Starting calibration for the camera...")
 (filenamesL, objPointsL, imagePointsL, imageSizeL) = FindChessboards('./image/chessboard-L')
 (filenamesR, objPointsR, imagePointsR, imageSizeR) = FindChessboards('./image/chessboard-R')
 
-sys.exit()
+def GetMatchingPoints(reqFilenames, allFilenames, objPoints, imagePoints):
+    reqFilenamesSet = set(reqFilenames)
+    reqObjPoints = []
+    reqImagePoints = []
 
-# Determine the new values for different patameters
+    for i, filename in enumerate(allFilenames):
+        if filename in reqFilenames:
+            reqObjPoints.append(objPoints[i])
+            reqImagePoints.append(imagePoints[i])
+    
+    return (reqObjPoints, reqImagePoints)
+
+filenames = filenamesL + filenamesR
+#filenames = list(set(filenamesL) & set(filenamesR))
+filenames = sorted(filenames)
+print("Using these images:")
+print(filenames)
+
+(objPointsL, imagePointsL) = GetMatchingPoints(filenames, filenamesL, objPointsL, imagePointsL)
+(objPointsR, imagePointsR) = GetMatchingPoints(filenames, filenamesR, objPointsR, imagePointsR)
+
+imageSize = imageSizeL
+objPoints = objPointsL
+#print(objPoints)
+#print(imagePointsL)
+print(imageSize)
+
+# Determine the new values for different parameters
 # Left Side
 print("Calibrating left camera...")
-retL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(objPoints, imagePointsL, ChessImageL.shape[::-1], None, None)
+retL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(objPoints, imagePointsL, imageSize, None, None)
 '''
 print("retL: ", retL)
 print("mtxL: ", mtxL) # 内参数矩阵
@@ -90,19 +115,9 @@ print("rvecsL: ", rvecsL) # 旋转向量
 print("tvecsL: ", tvecsL) # 平移向量
 '''
 
-hL, wL = ChessImageL.shape[:2]
-OmtxL, roiL = cv2.getOptimalNewCameraMatrix(mtxL, distL, (wL, hL), 1, (wL, hL))
-print(OmtxL)
-
-#sys.exit()
-
 # Right Side
 print("Calibrating right camera...")
-retR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(objPoints, imagePointsR, ChessImageR.shape[::-1], None, None)
-hR, wR = ChessImageR.shape[:2]
-OmtxR, roiR = cv2.getOptimalNewCameraMatrix(mtxR, distR, (wR, hR), 1, (wR, hR))
-
-print("Camera is ready to use.")
+retR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(objPoints, imagePointsR, imageSize, None, None)
 
 # Calibrate the Camera for Stereo
 flags = 0
@@ -116,7 +131,7 @@ retS, MLS, dLS, MRS, dRS, R, T, E, F = cv2.stereoCalibrate(objPoints,
                                                         distL,
                                                         mtxR,
                                                         distR,
-                                                        ChessImageL.shape[::-1],
+                                                        imageSize,
                                                         None,
                                                         None,
                                                         None,
@@ -126,6 +141,17 @@ retS, MLS, dLS, MRS, dRS, R, T, E, F = cv2.stereoCalibrate(objPoints,
 
 print("Rectifying cameras...")
 rectifyScale = 0.25
-RL, RR, PL, PR, Q, roiL, roiR = cv2.stereoRectify(MLS, dLS, MRS, dRS, ChessImageL.shape[::-1], R, T, None, None, None, None, None, cv2.CALIB_ZERO_DISPARITY, rectifyScale)
-leftStereoMap = cv2.initUndistortRectifyMap(MLS, dLS, RL, PL, ChessImageL.shape[::-1], cv2.CV_16SC2)
-rightStereoMap = cv2.initUndistortRectifyMap(MRS, dRS, RR, PR, ChessImageR.shape[::-1], cv2.CV_16SC2)
+RL, RR, PL, PR, Q, roiL, roiR = cv2.stereoRectify(MLS, dLS, MRS, dRS, imageSize, R, T, None, None, None, None, None, cv2.CALIB_ZERO_DISPARITY, rectifyScale)
+
+print("Saving calibration...")
+mapXL, mapYL = cv2.initUndistortRectifyMap(MLS, dLS, RL, PL, imageSize, cv2.CV_16SC2)
+mapXR, mapYR = cv2.initUndistortRectifyMap(MRS, dRS, RR, PR, imageSize, cv2.CV_16SC2)
+np.savez_compressed('./calibration.npz',
+                    imageSize=imageSize,
+                    mapXL=mapXL,
+                    mapYL=mapYL,
+                    roiL=roiL,
+                    mapXR=mapXR,
+                    mapYR=mapYR,
+                    roiR=roiR)
+
