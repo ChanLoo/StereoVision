@@ -4,7 +4,6 @@
 # Date: 2019.4
 # Reference: https://albertarmea.com/post/opencv-stereo-camera/
 
-
 import cv2
 import numpy as np
 import sys
