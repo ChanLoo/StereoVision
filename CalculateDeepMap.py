@@ -20,7 +20,7 @@ roiL = tuple(calibration['roiL'])
 mapXR = calibration['mapXR']
 mapYR = calibration['mapYR']
 roiR = tuple(calibration['roiR'])
-'''
+
 videoCapture = cv2.VideoCapture(cv2.CAP_DSHOW + 1)
 camera_width = 1280
 camera_height = 720
@@ -45,8 +45,8 @@ while(True):
     frameR = frame[:, :camera_width, :]
     cv2.imshow('Normal', np.hstack([frameL, frameR]))
 
-    fixedL = cv2.remap(frameL, mapXL, mapYL, remap_interpolation)
-    fixedR = cv2.remap(frameR, mapXR, mapYR, remap_interpolation)
+    fixedL = cv2.remap(frameL, mapXL, mapYL, cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)
+    fixedR = cv2.remap(frameR, mapXR, mapYR, cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)
     grayFixedL = cv2.cvtColor(fixedL, cv2.COLOR_BGR2GRAY)
     grayFixedR = cv2.cvtColor(fixedR, cv2.COLOR_BGR2GRAY)
     depth = stereoMatcher.compute(grayFixedL, grayFixedR)
@@ -89,7 +89,7 @@ stereo = cv2.StereoSGBM_create(minDisparity=minDisp,
                                 speckleWindowSize=100,
                                 speckleRange=32)
 
-'''
+
 '''
 # Filtering
 kernel= np.ones((3,3),np.uint8)
@@ -172,40 +172,15 @@ while(videoCapture.isOpened()):
 videoCapture.release()
 cv2.destroyAllWindows() 
 '''
-
+'''
 from matplotlib import pyplot as plt
 
-imgL = cv2.imread('./image/L0.png',0)
-imgR = cv2.imread('./image/R0.png',0)
+imgL = cv2.imread('./image/L3.png',0)
+imgR = cv2.imread('./image/R3.png',0)
 
 stereo = cv2.StereoBM_create(numDisparities=16, blockSize=15)
 disparity = stereo.compute(imgL,imgR)
 plt.imshow(disparity,'gray')
 plt.show()
 
-
-
-'''
-videoCapture = cv2.VideoCapture(cv2.CAP_DSHOW + 1)
-camera_width = 640
-camera_height = 480
-videoCapture.set(cv2.CAP_PROP_FRAME_WIDTH, camera_width*2)
-videoCapture.set(cv2.CAP_PROP_FRAME_HEIGHT, camera_height)
-
-while(True):
-    if not videoCapture.grab():
-        print("No more frames")
-        break
-    ret, frame = videoCapture.read()
-    frameL = frame[:, camera_width:, :]
-    frameR = frame[:, :camera_width, :]
-    cv2.imshow('Normal', np.hstack([frameL, frameR]))
-    disparity = stereo.compute(frameL, frameR)
-    cv2.imshow('deepMap', disparity)
-
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-videoCapture.release()
-cv2.destroyAllWindows()
 '''
