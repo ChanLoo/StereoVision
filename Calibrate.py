@@ -146,7 +146,7 @@ print("Saving calibration...")
 mapXL, mapYL = cv2.initUndistortRectifyMap(MLS, dLS, RL, PL, imageSize, cv2.CV_32FC1)
 mapXR, mapYR = cv2.initUndistortRectifyMap(MRS, dRS, RR, PR, imageSize, cv2.CV_32FC1)
 print(mapXL)
-#print(mapXR)
+print(mapXR)
 np.savez_compressed('./calibration.npz',
                     imageSize=imageSize,
                     mapXL=mapXL,

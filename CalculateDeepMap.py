@@ -21,6 +21,7 @@ mapXR = calibration['mapXR']
 mapYR = calibration['mapYR']
 roiR = tuple(calibration['roiR'])
 
+'''
 videoCapture = cv2.VideoCapture(cv2.CAP_DSHOW + 1)
 camera_width = 1280
 camera_height = 720
@@ -61,7 +62,7 @@ videoCapture.release()
 cv2.destroyAllWindows()
 '''
 
-'''
+
 def coordsMouseDisp(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDBLCLK:
         # print(x, y, disp[y, x], filteredImg[y, x])
@@ -88,7 +89,7 @@ stereo = cv2.StereoSGBM_create(minDisparity=minDisp,
                                 uniquenessRatio=10,
                                 speckleWindowSize=100,
                                 speckleRange=32)
-
+'''
 
 '''
 # Filtering
@@ -171,7 +172,7 @@ while(videoCapture.isOpened()):
 
 videoCapture.release()
 cv2.destroyAllWindows() 
-'''
+
 '''
 from matplotlib import pyplot as plt
 
