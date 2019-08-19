@@ -126,8 +126,8 @@ while(videoCapture.isOpened()):
         rightNice= cv2.remap(frameR, mapXR, mapYR, cv2.INTER_LANCZOS4, cv2.BORDER_CONSTANT, 0)
 
         # Show the undistorted images
-        cv2.imshow('Both Images', np.hstack([leftNice, rightNice]))
-        cv2.imshow('Normal', np.hstack([frameL, frameR]))
+        #cv2.imshow('Both Images', np.hstack([leftNice, rightNice]))
+        #cv2.imshow('Normal', np.hstack([frameL, frameR]))
 
         # Convert from color(BGR) to gray
         grayR = cv2.cvtColor(rightNice, cv2.COLOR_BGR2GRAY)
