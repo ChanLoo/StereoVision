@@ -154,5 +154,6 @@ np.savez_compressed('./calibration.npz',
                     roiL=roiL,
                     mapXR=mapXR,
                     mapYR=mapYR,
-                    roiR=roiR)
+                    roiR=roiR,
+                    Q = Q)
 
